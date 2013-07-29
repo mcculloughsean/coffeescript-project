@@ -6,9 +6,9 @@ LIBDIR = lib
 TESTDIR = test
 DISTDIR = dist
 
-SRC = $(shell find "$(SRCDIR)" -name "*.coffee" -type f | sort)
+SRC = $(wildcard $(SRCDIR)/*.coffee | sort)
 LIB = $(SRC:$(SRCDIR)/%.coffee=$(LIBDIR)/%.js)
-TEST = $(shell find "$(TESTDIR)" -name "*.coffee" -type f | sort)
+TEST = $(wildcard $(TESTDIR)/*.coffee | sort)
 
 COFFEE=node_modules/.bin/coffee --js
 MOCHA=node_modules/.bin/mocha --compilers coffee:coffee-script-redux/register -r coffee-script-redux/register -r test-setup.coffee -u tdd -R dot
@@ -43,7 +43,7 @@ release: build test
 	node -e '\
 		var j = require("./package.json");\
 		j.version = "$(NEXT_VERSION)";\
-		var s = JSON.stringify(j, null, 2);\
+		var s = JSON.stringify(j, null, 2) + "\n";\
 		require("fs").writeFileSync("./package.json", s);'
 	git commit package.json -m 'Version $(NEXT_VERSION)'
 	git tag -a "v$(NEXT_VERSION)" -m "Version $(NEXT_VERSION)"
